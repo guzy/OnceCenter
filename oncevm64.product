@@ -3,6 +3,7 @@
 
 <product name="OnceVM" id="OnceCenter.product" application="OnceCenter.application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -20,13 +21,15 @@
    <launcher>
       <solaris/>
       <win useIco="true">
-         <ico path="/OnceVM/logo2.ico"/>
+         <ico path="/OnceCenter/logo2.ico"/>
          <bmp/>
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="OnceCenter"/>

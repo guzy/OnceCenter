@@ -914,11 +914,12 @@ public class VIF extends XenAPIObject {
 			String method_call = "VIF.set_physical_network";
 			String session = c.getSessionReference();
 			Object[] method_params = { Marshalling.toXMLRPC(session),
-				Marshalling.toXMLRPC(vm_ref),
-				Marshalling.toXMLRPC(this.ref), 
-				Marshalling.toXMLRPC(phyNetwork) 
+			Marshalling.toXMLRPC(this.ref), 
+			Marshalling.toXMLRPC(vm_ref),
+			Marshalling.toXMLRPC(phyNetwork) 
 			};
 			c.dispatch(method_call, method_params);
 			return true;
 	}
+
 }
