@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="oncecenter.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="RCP Perspective"
+            class="oncecenter.Perspective"
+            id="oncecenter.perspective">
+      </perspective>
+   </extension>
+<extension
+         point="org.eclipse.ui.views">
+      <view
+  		    allowMultiple="true" 
+            class="oncecenter.views.MainView"
+            id="oncecenter.views.MainView"
+            relationship="fast"
+            name="清单信息">
+      </view>
+      <view
+            class="oncecenter.views.xenconnectiontreeview.VMTreeView"
+            id="oncecenter.tree.VMTreeView"
+            name="清单列表">
+      </view>
+      <view
+      		class="oncecenter.views.detailview.VMTreePageBookView"
+            id="oncecenter.views.VMTreePageBookView"
+            name="清单信息"
+            restorable="true">
+      </view>
+      <view
+            class="oncecenter.views.ExampleView"
+            id="oncecenter.views.ExampleView"
+            name="ExampleView"
+            restorable="true">
+      </view>
+      <view
+            class="oncecenter.views.logview.LogView"
+            id="oncecenter.views.LogView"
+            name="日志"
+            restorable="true">
+      </view>
+      <view
+            class="oncecenter.views.grouptreeview.VMTreeVMGroupView"
+            id="oncecenter.tree.VMTreeVMGroupView"
+            name="虚拟机组"
+            restorable="true">
+      </view>
+   </extension>
+<extension
+      id="product"
+      point="org.eclipse.core.runtime.products">
+   <product
+         application="OnceCenter.application"
+         name="OnceVM">
+      <property
+            name="appName"
+            value="OnceVM">
+      </property>
+      <property
+            name="windowImages"
+            value="icons/console/logo/logo16.png,icons/console/logo/logo32.png,icons/console/logo/logo48.png">
+      </property>
+      <property
+            name="startupProgressRect"
+            value="0,235,539,15">
+      </property>
+      <property
+            name="preferenceCustomization"
+            value="plugin_customization.ini">
+      </property>
+      <property
+            name="startupForegroundColor"
+            value="000000">
+      </property>
+      <property
+            name="startupMessageRect"
+            value="7,252,445,20">
+      </property>
+   </product>
+</extension>
+</plugin>

@@ -1,0 +1,35 @@
+<MenuBar>
+	<MenuManager name="文件">
+		<MenuManager name="新建">
+			<Action name="NewServerAction" class="oncecenter.action.NewServerAction" enable="true" type="all" text="连接新主机" image="action/add_server.png" disabledImage=""/>
+			<Action name="NewPoolAction" class="oncecenter.action.NewPoolAction" text="新建资源池" type="all" image="action/add_pool.png" disabledImage=""/>
+		</MenuManager>
+		<Contribution name="FileSeparator" class="org.eclipse.jface.action.Separator"/>
+		<Action name="ExitAction" class="oncecenter.action.ExitAction"  text="退出" type="all" image="" disabledImage=""/>
+	</MenuManager>
+	<MenuManager name="主机">
+		<Action name="NewVMAction" class="oncecenter.action.NewVMAction" enable="false" text="新建虚拟机" type="host" image="action/add_vm.png" disabledImage="action/add_vm_disable.png"/>
+		<Action name="NewSRAction" class="oncecenter.action.NewSRAction" enable="false" text="新建存储" type="host" image="action/add_storage.png" disabledImage="action/add_storage_disable.png"/>
+	</MenuManager>
+		<MenuManager name="虚拟机">
+		<Action name="StartupAction" class="oncecenter.action.vm.StartAction" enable="false" text="启动" type="haltedvm" image="action/start.png" disabledImage="action/start_disable.jpg"/>
+		<Action name="ShutDownAction" class="oncecenter.action.vm.ShutDownAction" enable="false"  text="关机" type="runningvm" image="action/shutdown.png" disabledImage=""/>
+		<Action name="RebootAction" class="oncecenter.action.vm.RebootAction" enable="false" text="重启" type="runningvm" image="action/reboot.png" disabledImage=""/>
+		<Contribution name="FileSeparator" class="org.eclipse.jface.action.Separator"/>
+		<Action name="RenameVMAction" class="oncecenter.action.vm.RenameVMAction" enable="false" text="重命名" type="haltedvm,runningvm" image="" disabledImage=""/>
+	</MenuManager>
+		<MenuManager name="资源池">
+		<Action name="NewVMAction" class="oncecenter.action.NewVMAction" enable="false" text="新建虚拟机" type="pool" image="action/add_vm.png" disabledImage="action/add_vm_disable.png"/>
+		<Action name="NewSRAction" class="oncecenter.action.NewSRAction" enable="false" text="新建存储" type="pool" image="action/add_storage.png" disabledImage="action/add_storage_disable.png"/>
+	</MenuManager>
+		<MenuManager name="模板">
+		<Action name="QuickCreateVMAction" class="oncecenter.action.template.QuickCreateVMAction" type="template" enable="false" text="快速生成" image="" disabledImage=""/>
+		<Action name="DeleteTempAction" class="oncecenter.action.template.DeleteTempAction" type="template" enable="false" text="移除" image="" disabledImage=""/>
+	</MenuManager>
+	<MenuManager name="上传">
+		<Action name="UploadIsoAction" class="oncecenter.action.UploadIsoAction" text="上传ISO文件" type="all" image="" disabledImage=""/>
+	</MenuManager> 
+	<MenuManager name="帮助">
+		<Action name="HelpContentAction" class="oncecenter.action.HelpAboutAction" enable="true" type="all" text="关于软件" image="" disabledImage=""/>
+	</MenuManager>
+</MenuBar>

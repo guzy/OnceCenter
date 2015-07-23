@@ -1,0 +1,6 @@
+<XenCenter>
+	<Components>
+		<Component desc="VM Manager" conf="vm-component.xml"/>
+		<Component desc="Pool Manager" conf="pool-component.xml"/>
+	</Components>
+</XenCenter>

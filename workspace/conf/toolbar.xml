@@ -1,0 +1,16 @@
+<ToolBar>
+	<Action name="BackAction" class="oncecenter.action.BackAction" enable="false" type="all" text="返回" image="toolbar/back.png" disabledImage="toolbar/back_disable.png"/>
+	<Action name="NextAction" class="oncecenter.action.NextAction" enable="false" type="all" text="前进" image="toolbar/forward.png" disabledImage="toolbar/forward_disable.png"/>
+	<Contribution name="FileSeparator" class="org.eclipse.jface.action.Separator"/>
+	<Action name="NewServerAction" class="oncecenter.action.NewServerAction" enable="true" type="all" text="连接新主机" image="toolbar/add_server.png" disabledImage=""/>
+	<Action name="NewPoolAction" class="oncecenter.action.NewPoolAction" enable="true" text="新建资源池" type="all" image="toolbar/addpool.png" disabledImage=""/>
+	<Action name="NewVMAction" class="oncecenter.action.NewVMAction" enable="false" type="pool,host,template,sr" text="新建虚拟机" image="toolbar/add_vm.png" disabledImage="toolbar/add_vm_disable.png"/>
+	<Action name="NewSRAction" class="oncecenter.action.NewSRAction" enable="false" text="新建存储" type="pool,host" image="toolbar/addstorage.png" disabledImage="toolbar/addstorage_disable.png"/>
+	<Contribution name="FileSeparator" class="org.eclipse.jface.action.Separator"/>
+	<Action name="StartupAction" class="oncecenter.action.vm.StartAction" enable="false" text="启动" type="haltedvm" image="toolbar/start.png" disabledImage="toolbar/start_disable.png"/>
+	<Action name="ShutDownAction" class="oncecenter.action.vm.ShutDownAction" enable="false"  text="关机" type="runningvm" image="toolbar/shutdown.png" disabledImage="toolbar/shutdown_disable.png"/>
+	<Action name="RebootAction" class="oncecenter.action.vm.RebootAction" enable="false" text="重启" type="runningvm" image="toolbar/reboot.png" disabledImage="toolbar/reboot_disable.png"/>
+	<Contribution name="FileSeparator" class="org.eclipse.jface.action.Separator"/>
+	<Action name="RecorverAction" class="oncecenter.action.RecorverAction" enable="true" type="all" text="修复" image="toolbar/recover.png" disabledImage=""/>
+	<Action name="UpdateSystemAction" class="oncecenter.action.UpdateSystemAction" enable="true" type="all" text="更新" image="toolbar/update.png" disabledImage=""/>
+</ToolBar>
