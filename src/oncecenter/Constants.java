@@ -125,7 +125,7 @@ public class Constants {
 	
 	public final static Object NULL_OBJECT = null;
 	//====================================
-	public static String netName="eth0";
+	public static String netName="eth0";//change it from "eth0" to "ovs0" at 2015/08/10
 	public static boolean displayStatusData = false;
 	public static String performpath="/opt/xen/performance/15sec.xml";
 	public static String performname = File.separator+"15sec.xml";

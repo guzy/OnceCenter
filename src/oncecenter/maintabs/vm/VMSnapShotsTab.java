@@ -102,7 +102,7 @@ public class VMSnapShotsTab extends OnceVMTabItem {
 	private VMTreeObjectVM selection;
 	private VMSnapShotsTab tab;
 	private Button editButton;
-	private SnapshotStrategy strategy = new SnapshotStrategy(1,10);
+	private SnapshotStrategy strategy = new SnapshotStrategy("1d",10);
 	
 	Button createSnapshotButton;
 	private Button rollbackSnapshotButton;
@@ -643,12 +643,11 @@ public class VMSnapShotsTab extends OnceVMTabItem {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					float period = 0;
+					String period = "";
 					if(cycleCombo.getText().contains("天")){
-						period = Float.parseFloat(cycleCombo.getText().split("天")[0]);
+						period = cycleCombo.getText().split("天")[0] + "d";
 					}else if(cycleCombo.getText().contains("小时")){
-						DecimalFormat df = new DecimalFormat("0.00");
-						period = Float.parseFloat(df.format(Float.parseFloat(cycleCombo.getText().split("小时")[0])/24));
+						period = cycleCombo.getText().split("小时")[0] + "h";
 					}
 					strategy.setPeriod(period);
 					strategy.setReverseNumber(Integer.parseInt(lifeTimeText.getText()));

@@ -3,7 +3,7 @@ package oncecenter.util.snapshotstrategy;
 import java.io.Serializable;
 
 public class SnapshotStrategy implements Serializable{
-	private float period;//天数
+	private String period;//天数
 	private int reverseNumber;//快照保留个数
 	
 	public int getReverseNumber() {
@@ -14,7 +14,7 @@ public class SnapshotStrategy implements Serializable{
 		this.reverseNumber = reverseNumber;
 	}
 
-	public SnapshotStrategy(float period,int reverseNumber){
+	public SnapshotStrategy(String period,int reverseNumber){
 		this.period = period;
 		this.reverseNumber = reverseNumber;
 	}
@@ -32,13 +32,14 @@ public class SnapshotStrategy implements Serializable{
 	@Override
 	public int hashCode()
 	{
-		return (int) (7*reverseNumber + 11*period); 
+		return (int) (7*reverseNumber); 
+//		return (int) (7*reverseNumber + 11*period); 
 	}
-	public float getPeriod() {
+	public String getPeriod() {
 		return period;
 	}
 
-	public void setPeriod(float period) {
+	public void setPeriod(String period) {
 		this.period = period;
 	}
 }

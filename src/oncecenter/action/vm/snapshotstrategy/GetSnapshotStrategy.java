@@ -14,6 +14,7 @@ import oncecenter.views.xenconnectiontreeview.elements.VMTreeObjectVM;
 import oncecenter.views.xenconnectiontreeview.elements.VMTreeObject.ItemState;
 
 import java.util.Iterator;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -45,7 +46,7 @@ public class GetSnapshotStrategy extends Action {
 		VMTreeView viewer;
 		Display display;
 		int reverseNumber;
-		int period;
+		String period;
 		public VMJob(VMTreeView viewer, Display display) {
 			super("配置虚拟机" + objectVM.getName() + "的快照策略");
 			
@@ -89,7 +90,7 @@ public class GetSnapshotStrategy extends Action {
 				if(snapInfo != null && snapInfo.size() == 2)
 				{
 					Iterator it = snapInfo.iterator();
-					period = Integer.parseInt((String) it.next());
+					period = (String) it.next();
 					reverseNumber = Integer.parseInt((String) it.next());
 					strategy.setPeriod(period);
 					strategy.setReverseNumber(reverseNumber);

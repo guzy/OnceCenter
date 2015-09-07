@@ -21,7 +21,7 @@ import com.once.xenapi.VM;
 
 public class VMUtil {
 
-	//鍒涘缓涓肯板畬鏁寸殑铏氭嫙鏈猴紝鍖呮嫭缃戠粶鍜岀鐩�
+	//閸掓稑缂撴稉鑲澘鐣弫瀵告畱閾忔碍瀚欓張鐚寸礉閸栧懏瀚純鎴犵捕閸滃瞼顥嗛惄锟�
 	public static VM create(String vmName,long vcpu,long memory
 			,VM newVm,Connection connection,Host host
 			,boolean isShare,String selectedMediaUuid
@@ -31,7 +31,7 @@ public class VMUtil {
 			return null;
 		if(!createVDIs(vmName,newVm,connection,host
 				,isShare,selectedMediaUuid,diskList)){
-			//澶勭悊鍑洪敊鎯呭喌
+			//婢跺嫮鎮婇崙娲晩閹懎鍠�
 			try {
 				newVm.destroy(connection, true);
 			} catch (Exception e) {
@@ -43,12 +43,13 @@ public class VMUtil {
 		return newVm;
 	}
 	
-	//鍒涘缓铏氭嫙鏈哄強铏氭嫙鏈虹綉缁�
+	//閸掓稑缂撻搹姘珯閺堝搫寮烽搹姘珯閺堣櫣缍夌紒锟�
 	public static VM createVmVIF(String vmName,long vcpu,long memory
 			,VM newVm,Connection connection,Host host){
 		newVm = createVm(vmName,vcpu,memory,newVm,connection,host);
 		if(newVm!=null){
 			if(!createVIF(newVm,connection,1500,host,ConfigUtil.getNetwork())){
+//			if(!createVIF(newVm,connection,1500,host,"ovs0")){//change from above to now for neimengguo,2015/08/11
 				try {
 					newVm.destroy(connection, true);
 				} catch (Exception e) {
@@ -62,7 +63,7 @@ public class VMUtil {
 		return newVm;
 	}
 	
-	//鍒涘缓铏氭嫙鏈猴紙console鍖呮嫭鍦ㄥ唴锛�
+	//閸掓稑缂撻搹姘珯閺堢尨绱檆onsole閸栧懏瀚崷銊ュ敶閿涳拷
 	public static VM createVm(String vmName,long vcpu,long memory
 			,VM newVm,Connection connection,Host host){
 		try{
@@ -111,15 +112,15 @@ public class VMUtil {
 		return newVm;
 	}
 	
-	//涓鸿櫄鎷熸満鍒涘缓鎸囧畾鐨勭綉缁�
+	//娑撻缚娅勯幏鐔告簚閸掓稑缂撻幐鍥х暰閻ㄥ嫮缍夌紒锟�
 	public static boolean createVIF(VM newVm,Connection connection,long MTU,Host host,String network){
 		
 		try{
 			VIF.Record vifRec = new VIF.Record();
 			vifRec.VM = newVm;
 			
-			//杩欎釜鍦版柟鏄笉鏄簲璇ユ敼涓控嬶紵锛燂紵锛�
-			if(network.equals(Constants.netName))
+			//鏉╂瑤閲滈崷鐗堟煙閺勵垯绗夐弰顖氱安鐠囥儲鏁兼稉鎺у绱甸敍鐕傜吹閿涳拷
+			if(network.equals(Constants.netName))//judge if "ovs0".equals("eth0")
 			{
 				Set<Network> networkSet =  Network.getByNameLabel(connection, network);
 				if(networkSet.iterator().hasNext())
@@ -137,7 +138,7 @@ public class VMUtil {
 		return true;
 	}
 	
-	//涓鸿櫄鎷熸満鍒涘缓瀹屾暣鐨勭鐩樻枃浠跺強鍏夌洏
+	//娑撻缚娅勯幏鐔告簚閸掓稑缂撶�灞炬殻閻ㄥ嫮顥掗惄妯绘瀮娴犺泛寮烽崗澶屾磸
 	public static boolean createVDIs(String vmName,VM newVm
 			,Connection connection,Host host
 			,boolean isShare,String selectedMediaUuid
@@ -172,7 +173,7 @@ public class VMUtil {
 		return true;
 	}
 	
-	//涓鸿櫄鎷熸満鍒涘缓鎸囧畾淇℃伅鐨刅DI
+	//娑撻缚娅勯幏鐔告簚閸掓稑缂撻幐鍥х暰娣団剝浼呴惃鍒匘I
 	public static VDI createVDI(String vmName,VM newVm
 			,Connection connection,Host host
 			,boolean isShare
@@ -222,7 +223,7 @@ public class VMUtil {
 		return vdi1;
 	}
 	
-	//涓鸿櫄鎷熸満鍒涘缓涓枯楀厜鐩�
+	//娑撻缚娅勯幏鐔告簚閸掓稑缂撴稉鏋鍘滈惄锟�
 	public static boolean createCD(Connection connection,String selectedMediaUuid
 			,VM newVm,Host host){
 		try{
@@ -243,7 +244,7 @@ public class VMUtil {
 		return true;
 	}
 	
-	//涓鸿櫄鎷熸満鍒涘缓鍏夌氦鍗�
+	//娑撻缚娅勯幏鐔告簚閸掓稑缂撻崗澶屾唉閸楋拷
 	public static boolean createFiber(Host host,String vmName,VM vm
 			,SR sr,Connection c,String location){
 		VDI.Record vdiRec1 = new VDI.Record();
@@ -317,14 +318,14 @@ public class VMUtil {
 			Long vcpuNumber = vm.getVCPUsMax(conn);
 			if(vcpuNumber > new Long(cpuNumber))
 			{
-				//浠庡ぇ鍙樺皬
+				//娴犲骸銇囬崣妯虹毈
 				vm.setVCPUsNumberLive(conn, new Long(cpuNumber));
 				vm.setVCPUsMax(conn, new Long(cpuNumber));
 				vm.setVCPUsAtStartup(conn, new Long(cpuNumber));
 			}
 			else if(vcpuNumber < new Long(cpuNumber))
 			{
-				//浠庡皬鍙樺ぇ
+				//娴犲骸鐨崣妯恒亣
 				vm.setVCPUsMax(conn, new Long(cpuNumber));
 				vm.setVCPUsNumberLive(conn, new Long(cpuNumber));
 				vm.setVCPUsAtStartup(conn, new Long(cpuNumber));
@@ -333,14 +334,14 @@ public class VMUtil {
 			Long memory = vm.getMemoryStaticMax(conn);
 			if(memory > new Long((long)memoryValue * 1024 * 1024 ))
 			{
-				//浠庡ぇ鍙樺皬
+				//娴犲骸銇囬崣妯虹毈
 				vm.setMemoryDynamicMax(conn, new Long((long)memoryValue * 1024 * 1024));
 				vm.setMemoryDynamicMin(conn, new Long((long)512 * 1024 * 1024));
 				vm.setMemoryStaticMax(conn, new Long((long)memoryValue * 1024 * 1024 ));
 			}
 			else if(memory < new Long((long)memoryValue * 1024 * 1024 ))
 			{
-				//浠庡皬鍙樺ぇ
+				//娴犲骸鐨崣妯恒亣
 				vm.setMemoryStaticMax(conn, new Long((long)memoryValue * 1024 * 1024 ));
 				vm.setMemoryDynamicMax(conn, new Long((long)memoryValue * 1024 * 1024));
 				vm.setMemoryDynamicMin(conn, new Long((long)512 * 1024 * 1024));
