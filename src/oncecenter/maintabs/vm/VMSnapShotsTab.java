@@ -26,6 +26,13 @@ import oncecenter.views.xenconnectiontreeview.elements.VMTreeObjectVM;
 
 
 
+
+
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableFontProvider;
@@ -55,6 +62,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -64,6 +73,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import com.once.xenapi.Connection;
 import com.once.xenapi.Types;
+import com.once.xenapi.VIF;
 import com.once.xenapi.VM;
 
 public class VMSnapShotsTab extends OnceVMTabItem {
@@ -107,6 +117,7 @@ public class VMSnapShotsTab extends OnceVMTabItem {
 	Button createSnapshotButton;
 	private Button rollbackSnapshotButton;
 	private Button deleteSnapshotButton;
+	private Button refreshSnapshotButton;
 	
 	public VMSnapShotsTab(CTabFolder arg0, int arg1, VMTreeObjectVM object) {
 		super(arg0, arg1, object);
@@ -224,6 +235,26 @@ public class VMSnapShotsTab extends OnceVMTabItem {
 			
 		});
 		
+		refreshSnapshotButton = new Button(contentCom, SWT.NONE); 
+		refreshSnapshotButton.setText("刷新快照");
+		refreshSnapshotButton.setEnabled(true);
+		refreshSnapshotButton.addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				
+				widgetSelected(arg0);
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				
+				refreshSnapshotButton.setEnabled(true);
+				RefreshSnapshotJob job = new RefreshSnapshotJob(PlatformUI.getWorkbench().getDisplay());
+        		job.schedule();
+			}
+			
+		});
 		
 		
 		new Label(contentCom,SWT.NONE);
@@ -709,6 +740,58 @@ public class VMSnapShotsTab extends OnceVMTabItem {
 		new Label(infoComp,SWT.NONE).setText("生成快照频率：");
 		currentPeriodLabel = new Label(infoComp,SWT.NONE);
 		currentPeriodLabel.setText(strategy.getPeriod() + "天");
+	}
+	class RefreshSnapshotJob extends Job
+	{
+		private Display display;
+		public RefreshSnapshotJob(Display display) {
+			super("刷新");
+			this.display = display;
+		}
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			monitor.beginTask("刷新", 50); 
+			if (!this.display.isDisposed()){
+			    Runnable runnable = new Runnable(){
+			        public void run(){
+			        	try{
+			    			sapList.clear();
+			    			VM vm = (VM)objectVM.getApiObject();
+			    			Connection connection = objectVM.getConnection();
+			    			Set<String> snapshots = vm.getSnapshots(connection);
+			    			for(String a : snapshots)
+			    			{
+			    				String [] names = a.split("@");
+			    				String name = names[names.length-1];
+			    				Snapshot snapshot = new Snapshot();
+			    				snapshot.type = "Disk only";
+			    				snapshot.name = name;
+			    				snapshot.time = getSnapshotTime(name);
+			    				snapshot.label = "";
+			    				snapshot.description = "";
+			    				sapList.add(snapshot);
+			    			}
+			    			Collections.reverse(sapList);
+			    			tableViewer.setInput(sapList);
+			    			GridData griddata = new GridData(GridData.FILL_BOTH);
+			    			snapTable.setLayoutData(griddata);
+			    		}
+			    		catch(Exception e)
+			    		{
+			    			e.printStackTrace();
+			    		}
+			        	refreshSnapshotButton.setEnabled(true);
+			        	MessageBox messageBox = new MessageBox(new Shell(), SWT.OK); 
+						messageBox.setText("提示");
+						messageBox.setMessage("刷新快照列表成功！");
+						messageBox.open();
+			        }
+			    };
+			    this.display.syncExec(runnable);
+			}
+			monitor.done();
+			return Status.OK_STATUS;
+		}
 	}
 	
 }

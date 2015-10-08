@@ -146,6 +146,15 @@ public class GZYTest {
 //			System.out.println(host.verifyLicense(c, license));
 	}
 	
+	public static void testSnapshotStrategy(Connection c, String vm_uuid){
+		try {
+			VM vm = VM.getByUuid(c, vm_uuid);
+			System.out.println(vm.getSnapshotPolicy(c));
+		} catch (XenAPIException | XmlRpcException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void testVMOperation(Connection c){
 		String nameLabel = "beyond_cloud_1";
 		try {
@@ -231,10 +240,11 @@ public class GZYTest {
 	}
 
 	public static void main(String[] args) throws BadServerResponse, XenAPIException, XmlRpcException, MalformedURLException {
-		Connection c = new Connection("http://133.133.131.11:9363", "root", "123456");
+		Connection c = new Connection("http://133.133.135.16:9363", "root", "onceas");
 		Set<VM> vmSet = VM.getAll(c);
 		for(VM singleVM : vmSet){
-			System.out.println(singleVM.getNameLabel(c));
+			System.out.print("虚拟机名称 = " + singleVM.getNameLabel(c) + ", 快照策略 = ");
+			testSnapshotStrategy(c,singleVM.getUuid(c));
 		}
 //		testVNC(c, "2728064c-6345-4a57-acda-6abefa8cc6a3", "133.133.135.12");
 //		testFastCreateTime(c);

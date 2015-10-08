@@ -13,7 +13,12 @@ public class PerformAnalyseUtil {
 		double[] result = new double[stringArray.size()];
 		for (int i = 0; i < stringArray.size(); i++) {
 			try{
-				result[i] = Double.parseDouble(stringArray.get(i));
+				if(stringArray.get(i) != null){
+					result[i] = Double.parseDouble(stringArray.get(i));
+					result[i] /= 1024.0; 
+				} else {
+					result[i] = 0.0;
+				}
 			}catch(Exception e){
 				e.printStackTrace();
 				result[i]=0;

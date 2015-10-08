@@ -15,7 +15,7 @@ import oncecenter.views.xenconnectiontreeview.elements.VMTreeObject.ItemState;
 import com.once.xenapi.Types;
 import com.once.xenapi.VM;
 
-public class GetPerformTask extends TimerTask {
+public class CopyOfGetPerformTask extends TimerTask {
 	
 	private VMTreeObjectRoot root;
 //	private VMTreeObjectPool rootPool;
@@ -23,7 +23,7 @@ public class GetPerformTask extends TimerTask {
 //	private Connection conn;
 //	private boolean isPool;
 	
-	public GetPerformTask(VMTreeObjectRoot root){
+	public CopyOfGetPerformTask(VMTreeObjectRoot root){
 		this.root=root;
 //		this.conn=root.getConnection();
 //		if(root instanceof VMTreeObjectPool){

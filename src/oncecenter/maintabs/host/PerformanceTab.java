@@ -91,7 +91,7 @@ public class PerformanceTab extends OnceHostTabItem {
 	Composite tableComposite;
 	
 	public Timer refreshPerformTimer;
-	private Combo jiange;
+//	private Combo jiange;
 	
 	String innerText = null;
 	String innerMessage = null;
@@ -163,12 +163,14 @@ public class PerformanceTab extends OnceHostTabItem {
 		space.setText(" ");
 		space.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		new Label(titleComposite,SWT.NONE).setText("时间间隔：");
+		new Label(titleComposite,SWT.NONE).setText("");
+		new Label(titleComposite,SWT.NONE).setText("");
+//		new Label(titleComposite,SWT.NONE).setText("时间间隔：");
 		
-		jiange = new Combo(titleComposite,SWT.DROP_DOWN);
-		jiange.add("15秒", 0);
-		jiange.add("30分钟",1);
-		jiange.add("8小时",2);
+//		jiange = new Combo(titleComposite,SWT.DROP_DOWN);
+//		jiange.add("15秒", 0);
+//		jiange.add("30分钟",1);
+//		jiange.add("8小时",2);
 //		jiange.addSelectionListener(new SelectionAdapter() {
 //			public void widgetSelected(SelectionEvent e) {
 //				if(jiange.getText().equals("30分钟")){
@@ -182,7 +184,7 @@ public class PerformanceTab extends OnceHostTabItem {
 //				}
 //			}
 //		});
-		jiange.setText("15秒");
+//		jiange.setText("15秒");
 		
 		new Label(titleComposite,SWT.NONE).setText("切换到：");
 		
@@ -253,9 +255,11 @@ public class PerformanceTab extends OnceHostTabItem {
 		new Label(titleComposite,SWT.NONE);
 		new Label(titleComposite,SWT.NONE);
 		new Label(titleComposite,SWT.NONE);
+		/*
 		openPerformance = new Button(titleComposite, SWT.NONE);
 		if (isPerformanceRecClosed == true) {
-			innerText = "打开记录开关";			
+			innerText = "";			
+//			innerText = "打开记录开关";		
 		} else {
 			innerText = "关闭记录开关";			
 		}
@@ -281,7 +285,7 @@ public class PerformanceTab extends OnceHostTabItem {
     			}
              }    
          });
-		
+		*/
 		chartCanvas = new Canvas(composite, SWT.NONE); 
 		chartCanvas.setLayout(new FillLayout());
 		chartCanvas.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -713,7 +717,8 @@ public class PerformanceTab extends OnceHostTabItem {
 			    		    } else {
 			    		    	host.setPerformanceRecClosed(true);
 			    		    	isPerformanceRecClosed = host.isPerformanceRecClosed();
-			    		    	innerText = "打开记录开关";
+			    		    	innerText = "";
+//			    		    	innerText = "打开记录开关";
 			    		    }
 			    			openPerformance.setText(innerText);
 				        }

@@ -3,6 +3,7 @@ package oncecenter.util.performance.drawchart;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class DrawVmPerformance {
         			&& contains(handlePart(e.getKey()),"cpu")){
         		double[] cpu = toDoubleArray(e.getValue());
         		TimeSeries timeSeriesCPU = new TimeSeries(handlePart(e.getKey()),Second.class);
-        		for(int i=stepnumber-1; i>=0;i--){	               
+        		for(int i=stepnumber-1; i>=0;i--){
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
@@ -77,15 +78,15 @@ public class DrawVmPerformance {
         	
         	//get the line data of memory
         	if(handleUUID(e.getKey()).equals(UUID)
-        			&& handlePart(e.getKey()) .equals("memory_internal_free")){
+        			&& handlePart(e.getKey()) .equals("mem_free")){
         		double[] freeMemorys = toDoubleArray(e.getValue());
         		for (int i = stepnumber-1; i>=0; i--) {
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
-//        	        System.out.println("用于画图的内存信息是 = " + totalMemory*(100-freeMemorys[stepnumber-i-1])/100);
+//        	        System.out.println("老版本用于画图的内存数据 = " + (totalMemory-freeMemorys[stepnumber-i-1]));
         			timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), totalMemory*(100-freeMemorys[stepnumber-i-1])/100);
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), totalMemory-freeMemorys[stepnumber-i-1]);
         		}
         	}
         	
@@ -115,8 +116,11 @@ public class DrawVmPerformance {
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("用于画图的网络接收流量是 = " + netRev[stepnumber-i-1]);
-        	        timeSeriesNetRev.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), netRev[stepnumber-i-1]);
+        	        if(stepnumber-i-1 < netRev.length){
+        	        	timeSeriesNetRev.addOrUpdate(new Second(getSecond(t),getMinute(t),
+            					getHour(t),getDay(t),getMonth(t),getYear(t)), netRev[stepnumber-i-1]);
+        	        }
+        	        
         		}      
         		lineDatasetNet.addSeries(timeSeriesNetRev);
         	}
@@ -245,7 +249,12 @@ public class DrawVmPerformance {
 		}
 		double[] result = new double[stringArray.size()];
 		for (int i = 0; i < stringArray.size(); i++) {
-			result[i] = Double.parseDouble(stringArray.get(i));
+			if(stringArray.get(i) != null){
+				result[i] = Double.parseDouble(stringArray.get(i));
+				result[i] /= 1024.0;
+			}else{
+				result[i] = 0.0;
+			}			
 		}
 		return result;
 	}

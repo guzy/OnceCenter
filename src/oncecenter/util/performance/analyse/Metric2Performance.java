@@ -26,7 +26,6 @@ public class Metric2Performance {
 		if(host.getMetrics()==null||host.getMetrics().size()==0)
 			return;
 		for(Map.Entry<String, List<String>> e: host.getMetrics().entrySet()) {
-			
 			//get the cpu information and change to cpu usage list
 			if(PerformAnalyseUtil.handleUUID(e.getKey()).equals(host.getUuid())
         			&& PerformAnalyseUtil.contains(PerformAnalyseUtil.handlePart(e.getKey()),ConstCharacter.CPU)){
@@ -81,18 +80,20 @@ public class Metric2Performance {
 	 * @param vm
 	 */
 	public static void analyVMPerformance(VMTreeObjectVM vm) {
-		
 		if(vm.returnMetric()==null||vm.returnMetric().size()==0){
 //			System.out.println("metricsTimelines is null " + vm.getName());
 			return;
 		}	
 		
 		for (Entry<String, List<String>> e : vm.returnMetric().entrySet()) {
+//			if(PerformAnalyseUtil.handleUUID(e.getKey()).equals(vm.getUuid())){
+//				System.out.println("condition 1 is true--" + vm.getName());
+//			}
+//			System.out.println("condition 2 = " + PerformAnalyseUtil.handlePart(e.getKey()));
 			// get the cpu information
 			if (PerformAnalyseUtil.handleUUID(e.getKey()).equals(vm.getUuid())
 					&& PerformAnalyseUtil.contains(PerformAnalyseUtil.handlePart(e.getKey()), ConstCharacter.CPU)) {
 				double[] allcpuofone = PerformAnalyseUtil.toDoubleArray(e.getValue());
-//				System.out.println("*********************");
 //				System.out.println("CPU使用率是 = " + allcpuofone[allcpuofone.length-1] * 100);
 				vm.getCpuUsageList().put(PerformAnalyseUtil.getCPUNum(e.getKey()), allcpuofone[allcpuofone.length-1] * 100);
 			}
@@ -166,7 +167,6 @@ public class Metric2Performance {
 			vm.setDiskUsageValue(0);
 			vm.setDiskTotalValue(0);
 			Connection c = vm.getConnection();
-			System.out.println("当前处理的虚拟机名字是 = " + vm.getName());
 			for(VDI v : VDI.getByVM(c, (VM)vm.getApiObject()))
 			{
 				Disk disk = vm.new Disk();

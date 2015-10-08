@@ -91,7 +91,7 @@ public class DrawHostPerformance {
 	        	
 	        	//get the line data of memory
 	        	if(handleUUID(e.getKey()).equals(UUID)
-	        			&& handlePart(e.getKey()) .equals("memory_free_kib")){
+	        			&& handlePart(e.getKey()) .equals("mem_free")){
 	        		double[] freeMemorys = toDoubleArray(e.getValue());
 	        		for (int i = stepnumber-1; i>=0; i--) {
 	        			Date date = new Date((endTime-i*step*1000));

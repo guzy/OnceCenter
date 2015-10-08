@@ -143,13 +143,15 @@ public class VMPerformanceTab extends OnceVMTabItem {
 		space.setText(" ");
 		space.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		new Label(titleComposite,SWT.NONE).setText("时间间隔：");
+		new Label(titleComposite,SWT.NONE).setText("");
+		new Label(titleComposite,SWT.NONE).setText("");
+//		new Label(titleComposite,SWT.NONE).setText("时间间隔：");
 		
-		jiange = new Combo(titleComposite,SWT.DROP_DOWN);
-		jiange.add("15秒", 0);
-		jiange.add("30分钟",1);
-		jiange.add("8小时",2);
-		jiange.setText("15秒");
+//		jiange = new Combo(titleComposite,SWT.DROP_DOWN);
+//		jiange.add("15秒", 0);
+//		jiange.add("30分钟",1);
+//		jiange.add("8小时",2);
+//		jiange.setText("15秒");
 //		chartType.add("磁盘",3);
 //		chartType.setText("CPU");
 //		chartType.addSelectionListener(new SelectionAdapter() {
