@@ -41,7 +41,8 @@ public class DrawVmPerformance {
 	public void drawVm(ConcurrentHashMap<String, List<String>> metricsTimelines, long endTime, double totalMemory, int columns,String UUID,long vmstep) {	
 		/*如果xml上给的网络硬盘数据时以Byte为单位则不需乘8*/
 		long step = vmstep;//单位是S
-		int stepnumber = columns;
+		int stepnumber = 60;
+//		int stepnumber = columns;
 		//endTime单位是S，endTime - startTime = stepnumber * step = 监控的时间
 		lineDatasetCPU = new TimeSeriesCollection();		
 		lineDatasetMemory = new TimeSeriesCollection();
@@ -61,15 +62,21 @@ public class DrawVmPerformance {
         	//get the line data of cpu
         	if(handleUUID(e.getKey()).equals(UUID)
         			&& contains(handlePart(e.getKey()),"cpu")){
-        		double[] cpu = toDoubleArray(e.getValue());
+        		double[] originArr = toDoubleArray(e.getValue());
+        		if(originArr.length > stepnumber){
+        			double[] inputArr = new double[stepnumber]; 
+            		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
+        		}
+//        		stepnumber = originArr.length;
+//        		System.out.println("vm 的CPU数据 = " +stepnumber +" : "+ Arrays.toString(originArr));
         		TimeSeries timeSeriesCPU = new TimeSeries(handlePart(e.getKey()),Second.class);
         		for(int i=stepnumber-1; i>=0;i--){
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("用于画图的CPU信息是 = " + cpu[stepnumber-i-1]*100);
-        			timeSeriesCPU.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), cpu[stepnumber-i-1]*100);
+    	        	timeSeriesCPU.addOrUpdate(new Second(getSecond(t),getMinute(t),
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]*100);
         		}
         		//System.out.println(timeSeriesCPU.getKey().toString());
         		lineDatasetCPU.getSeries(timeSeriesCPU.getKey());
@@ -79,29 +86,37 @@ public class DrawVmPerformance {
         	//get the line data of memory
         	if(handleUUID(e.getKey()).equals(UUID)
         			&& handlePart(e.getKey()) .equals("mem_free")){
-        		double[] freeMemorys = toDoubleArray(e.getValue());
+        		double[] originArr = toDoubleArray(e.getValue());
+        		stepnumber = originArr.length;
+//        		System.out.println("vm 的mem数据 = " + Arrays.toString(originArr));
+//        		double[] inputArr = new double[stepnumber]; 
+//        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
         		for (int i = stepnumber-1; i>=0; i--) {
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("老版本用于画图的内存数据 = " + (totalMemory-freeMemorys[stepnumber-i-1]));
-        			timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), totalMemory-freeMemorys[stepnumber-i-1]);
+    	        	timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), totalMemory-originArr[stepnumber-i-1]);
         		}
         	}
         	
         	//get the line data of vif send
         	if(handleUUID(e.getKey()).equals(UUID)
         			&& contains(handlePart(e.getKey()),"vif") && contains(handlePart(e.getKey()),"tx")){
-        		double[] netSend = toDoubleArray(e.getValue());
+        		double[] originArr = toDoubleArray(e.getValue());
+        		stepnumber = originArr.length;
+//        		System.out.println("vm 的VIf数据 = " + Arrays.toString(originArr));
+//        		double[] inputArr = new double[stepnumber]; 
+//        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
         		TimeSeries timeSeriesNetSend = new TimeSeries("Net"+handleSign(e.getKey())+"Send",Second.class);
         		for(int i=stepnumber-1; i>=0;i--){	               
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("用于画图的网络发送流量是 = " + netSend[stepnumber-i-1]);
-        			timeSeriesNetSend.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), netSend[stepnumber-i-1]); 
+    	        	timeSeriesNetSend.addOrUpdate(new Second(getSecond(t),getMinute(t),
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]); 
         		}	
         		lineDatasetNet.addSeries(timeSeriesNetSend);
         	}
@@ -109,17 +124,19 @@ public class DrawVmPerformance {
         	//get the line data of vif Rev
         	if(handleUUID(e.getKey()).equals(UUID)
         			&& contains(handlePart(e.getKey()),"vif") && contains(handlePart(e.getKey()),"rx")){
-        		double[] netRev = toDoubleArray(e.getValue());
+        		double[] originArr = toDoubleArray(e.getValue());
+        		stepnumber = originArr.length;
+//        		System.out.println("vm 的VIF RECV数据 = " + Arrays.toString(originArr));
+//        		double[] inputArr = new double[stepnumber]; 
+//        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
         		TimeSeries timeSeriesNetRev = new TimeSeries("Net"+handleSign(e.getKey())+"Rev",Second.class);
         		for(int i=stepnumber-1; i>=0;i--){	               
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("用于画图的网络接收流量是 = " + netRev[stepnumber-i-1]);
-        	        if(stepnumber-i-1 < netRev.length){
-        	        	timeSeriesNetRev.addOrUpdate(new Second(getSecond(t),getMinute(t),
-            					getHour(t),getDay(t),getMonth(t),getYear(t)), netRev[stepnumber-i-1]);
-        	        }
+    	        	timeSeriesNetRev.addOrUpdate(new Second(getSecond(t),getMinute(t),
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]);
         	        
         		}      
         		lineDatasetNet.addSeries(timeSeriesNetRev);
@@ -128,15 +145,19 @@ public class DrawVmPerformance {
         	//get the line data of vbd Read
         	if(handleUUID(e.getKey()).equals(UUID)
         			&& contains(handlePart(e.getKey()),"vbd") && contains(handlePart(e.getKey()),"read")){
-        		double[] DiskRead = toDoubleArray(e.getValue());
+        		double[] originArr = toDoubleArray(e.getValue());
+        		stepnumber = originArr.length;
+//        		System.out.println("vm 的vbd数据 = " + Arrays.toString(originArr));
+//        		double[] inputArr = new double[stepnumber]; 
+//        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
         		TimeSeries timeSeriesDiskRead = new TimeSeries("Disk"+handleSign(e.getKey())+"Read",Second.class);
         		for(int i=stepnumber-1; i>=0;i--){	               
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("用于画图的硬盘读速度是 = " + DiskRead[stepnumber-i-1]/1024/1024);
-        			timeSeriesDiskRead.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), DiskRead[stepnumber-i-1]/1024/1024);
+    	        	timeSeriesDiskRead.addOrUpdate(new Second(getSecond(t),getMinute(t),
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]/1024/1024);
         		}	   
         		lineDatasetDisk.addSeries(timeSeriesDiskRead);
         	}
@@ -144,15 +165,19 @@ public class DrawVmPerformance {
         	//get the line data of vbd write
         	if(handleUUID(e.getKey()).equals(UUID)
         			&& contains(handlePart(e.getKey()),"vbd") && contains(handlePart(e.getKey()),"write")){
-        		double[] DiskWrite = toDoubleArray(e.getValue());
+        		double[] originArr = toDoubleArray(e.getValue());
+        		stepnumber = originArr.length;
+//        		System.out.println("vm 的vbd write数据 = " + Arrays.toString(originArr));
+//        		double[] inputArr = new double[stepnumber]; 
+//        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
         		TimeSeries timeSeriesDiskWrite = new TimeSeries("Disk"+handleSign(e.getKey())+"Write",Second.class);
         		for(int i=stepnumber-1; i>=0;i--){	               
         			Date date = new Date((endTime-i*step*1000));
         			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         	        String t = df.format(date);
 //        	        System.out.println("用于画图的硬盘写速度是 = " + DiskWrite[stepnumber-i-1]/1024/1024);
-        			timeSeriesDiskWrite.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), DiskWrite[stepnumber-i-1]/1024/1024);
+    	        	timeSeriesDiskWrite.addOrUpdate(new Second(getSecond(t),getMinute(t),
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]/1024/1024);
         		}	     
         		lineDatasetDisk.addSeries(timeSeriesDiskWrite);
         	}

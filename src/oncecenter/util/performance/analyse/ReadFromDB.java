@@ -151,7 +151,7 @@ public class ReadFromDB {
 			queryStmt = conn.createStatement();
 	        rs = queryStmt.executeQuery(sql);
 	        while(rs.next()){
-	        	if(!rs.getString(1).equals("container_info")){
+	        	if(rs.getString(1).contains("30min")){
 	        		result.add(rs.getString(1));
 	        	}	        	
 	        }       
