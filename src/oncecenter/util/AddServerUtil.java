@@ -163,7 +163,7 @@ public class AddServerUtil {
 			Map<Host, Host.Record> hostRecords = Host.getAllRecords(connection);
 			for(Host host : hostRecords.keySet()){
 				Host.Record record = hostRecords.get(host);
-				double memoryTotal = record.memoryTotal/1024.0/1024.0;
+				double memoryTotal = record.memoryTotal/1024.0/1024;
 				if(memoryTotal>Constants.maxMemoryTotal){
 					Constants.maxMemoryTotal = memoryTotal;
 				}

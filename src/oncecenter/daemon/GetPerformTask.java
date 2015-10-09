@@ -1,5 +1,8 @@
 package oncecenter.daemon;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.TimerTask;
 
 import oncecenter.Constants;
@@ -35,7 +38,6 @@ public class GetPerformTask extends TimerTask {
 //		}
 		
 	}
-	
 	public void run(){
 		if(!root.getItemState().equals(ItemState.able)){
 			return;
@@ -52,9 +54,14 @@ public class GetPerformTask extends TimerTask {
 			}
 //			XML2Metrics.getMetricsTimelines(host);
 			ReadFromDB.getMetricsTimelines(host);
+//			System.out.println(host.getName() + "的性能数据个数为 = " + host.getMetrics().size());
+//			for(Map.Entry<String, List<String>> entry : host.getMetrics().entrySet()){
+//				System.out.println(host.getName() + "的性能数据为 = " + entry.getKey() + "-->" + entry.getValue());
+//			}
 			Metric2Performance.analyHostPerformance(host);
 			host.getGrade();
 			if(host.columns != 0) {
+//				System.out.println("host.endTime = " + host.endTime + ", host.startTime = " + host.startTime + ", host.columns=  " + host.columns);
 				host.step =  (host.endTime-host.startTime)/host.columns/1000;
 			} else {
 				host.step = 0;
@@ -65,15 +72,22 @@ public class GetPerformTask extends TimerTask {
 				System.out.println("在GetPerformTask中，当前虚拟机为空");
 			} else if(Constants.displayStatusData){
 				VM.Record record = (VM.Record)vm.getRecord();
-				VMTreeObjectHost host= root.hostMap.get(record.residentOn);
+//				VMTreeObjectHost host= root.hostMap.get(record.residentOn);
 				//vm.getMetricsTimelines(host.getPerformFilePath());
-				vm.setMetric(host.getMetrics());
-				vm.startTime = host.startTime;
-				vm.endTime = host.endTime;
-				vm.columns = host.columns;
-				vm.step = host.step;
+//				vm.setMetric(host.getMetrics());
+//				vm.startTime = host.startTime;
+//				vm.endTime = host.endTime;
+//				vm.columns = host.columns;
+//				vm.step = host.step;
 				//vm.analyVMPerformance();
+				ReadFromDB.getMetricsTimelines(vm);
 				Metric2Performance.analyVMPerformance(vm);
+				if(vm.columns != 0) {
+//					System.out.println("vm.endTime = " + vm.endTime + ", vm.startTime = " + vm.startTime + ", vm.columns=  " + vm.columns);
+					vm.step =  (vm.endTime-vm.startTime)/vm.columns/1000;
+				} else {
+					vm.step = 0;
+				}				
 				if(record.powerState.equals(Types.VmPowerState.RUNNING)){
 					vm.alarm();
 				}

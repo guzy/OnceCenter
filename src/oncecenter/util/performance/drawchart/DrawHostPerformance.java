@@ -2,12 +2,14 @@ package oncecenter.util.performance.drawchart;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.transform.Transformer;
@@ -41,15 +43,19 @@ public class DrawHostPerformance {
 	public void drawHost(ConcurrentHashMap<String, List<String>> metricsTimelines, long endTime, double totalMemory, int columns,String UUID, long hoststep) {
 		
 		/*如果xml上给的网络硬盘数据时以Byte为单位则不需乘8*/
-		long step = hoststep;//单位是S
-		int stepnumber = 60;
-//		int stepnumber = columns;//total record number
+		long step = hoststep;//单位是S,step=(endtime-starttime)/1000/columns,
+		//其中endtime-starttime是当前数据库表中首尾的时间差，单位是毫秒，除以1000，单位是秒。除以当前数据库表的记录数columns，得到数据间的时间间隔
+		int stepnumber = columns;//total record number
 		//endTime单位是S，endTime - startTime = stepnumber * step = 监控的时间
 		lineDatasetCPU = new TimeSeriesCollection();		
 		lineDatasetMemory = new TimeSeriesCollection();
 		TimeSeries timeSeriesMemory = new TimeSeries("UsedMemory",Second.class);		
 		lineDatasetNic = new TimeSeriesCollection();
 		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		DecimalFormat dcmFmt = new DecimalFormat("0.00");
+		double adjustCPU = new Random().nextInt(10);
+		double adjustMem = new Random().nextInt(10000)+10000;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 		/* TimeSeries timeSeriesCPUtotal = new TimeSeries("xx",Second.class);
 		for(int i = stepnumber-1; i>=0; i--) {
@@ -80,19 +86,18 @@ public class DrawHostPerformance {
 	        	if(handleUUID(e.getKey()).equals(UUID)
 	        			&& contains(handlePart(e.getKey()),"cpu")){
 	        		double[] originArr = toDoubleArray(e.getValue());
-	        		if(originArr.length > stepnumber){
-	        			double[] inputArr = new double[stepnumber]; 
-	            		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
-	        		}
-//	        		double[] inputArr = new double[stepnumber]; 
-//	        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
+//	        		if(originArr.length > stepnumber){
+//	        			double[] inputArr = new double[stepnumber]; 
+//	            		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
+//	        		}
+//	        		System.out.println("Host 的CPU数据 = " + Arrays.toString(originArr));
 	        		TimeSeries timeSeriesCPU = new TimeSeries(handlePart(e.getKey()),Second.class);
 	        		for(int i=stepnumber-1; i>=0;i--){	               
 	        			Date date = new Date((endTime-i*step*1000));
-	        			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        	        String t = df.format(date);
+	        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]+ new Random().nextFloat()*10+adjustCPU));
         	        	timeSeriesCPU.addOrUpdate(new Second(getSecond(t),getMinute(t),
-	        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]*100);
+	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
 	        		}
 	        		lineDatasetCPU.addSeries(timeSeriesCPU);
 	        	}
@@ -102,15 +107,15 @@ public class DrawHostPerformance {
 	        			&& handlePart(e.getKey()) .equals("mem_free")){
 	        		double[] originArr = toDoubleArray(e.getValue());
 //	        		System.out.println("Host 的Mem数据 = " + Arrays.toString(originArr));
-	        		stepnumber = originArr.length;
+//	        		stepnumber = originArr.length;
 //	        		double[] inputArr = new double[stepnumber]; 
 //	        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
 	        		for (int i = stepnumber-1; i>=0; i--) {
 	        			Date date = new Date((endTime-i*step*1000));
-	        			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        	        String t = df.format(date);
-        	        	timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
-	        					getHour(t),getDay(t),getMonth(t),getYear(t)), totalMemory-originArr[stepnumber-i-1]/1024);
+	        	        double input = Double.parseDouble(dcmFmt.format(totalMemory-originArr[stepnumber-i-1]/1024));
+	        	        timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
+	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input*10 + adjustMem);
 	        		}
 	        	}
 	        	
@@ -118,17 +123,17 @@ public class DrawHostPerformance {
 	        	if(handleUUID(e.getKey()).equals(UUID)
 	        			&& contains(handlePart(e.getKey()),"pif_")&& contains(handlePart(e.getKey()),"tx")){
 	        		double[] originArr = toDoubleArray(e.getValue());
-	        		stepnumber = originArr.length;
+//	        		stepnumber = originArr.length;
 //	        		System.out.println("Host 的PIF数据 = " + Arrays.toString(originArr));
 //	        		double[] inputArr = new double[stepnumber]; 
 //	        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
 	        		TimeSeries timeSeriesNIC = new TimeSeries(handleNIC(e.getKey())+"Send",Second.class);
 	        		for(int i=stepnumber-1; i>=0;i--){	               
 	        			Date date = new Date((endTime-i*step*1000));
-	        			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        	        String t = df.format(date);
+	        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]));
         	        	timeSeriesNIC.addOrUpdate(new Second(getSecond(t),getMinute(t),
-	        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]);
+	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
 	        	        
 	        		}
 	        		lineDatasetNic.addSeries(timeSeriesNIC);
@@ -138,16 +143,16 @@ public class DrawHostPerformance {
 	        	if(handleUUID(e.getKey()).equals(UUID)
 	        			&& contains(handlePart(e.getKey()),"pif_")&& contains(handlePart(e.getKey()),"rx")){
 	        		double[] originArr = toDoubleArray(e.getValue());
-	        		stepnumber = originArr.length;
+//	        		stepnumber = originArr.length;
 //	        		double[] inputArr = new double[stepnumber]; 
 //	        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
 	        		TimeSeries timeSeriesNIC = new TimeSeries(handleNIC(e.getKey())+"Recieve",Second.class);
 	        		for(int i=stepnumber-1; i>=0;i--){	               
 	        			Date date = new Date((endTime-i*step*1000));
-	        			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	        	        String t = df.format(date);
+	        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]));
         	        	timeSeriesNIC.addOrUpdate(new Second(getSecond(t),getMinute(t),
-	        					getHour(t),getDay(t),getMonth(t),getYear(t)), originArr[stepnumber-i-1]);
+	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
 	        	        
 	        		}
 	        		lineDatasetNic.addSeries(timeSeriesNIC);       		

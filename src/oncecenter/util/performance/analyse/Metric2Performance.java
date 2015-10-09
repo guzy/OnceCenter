@@ -1,5 +1,6 @@
 package oncecenter.util.performance.analyse;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,6 @@ public class Metric2Performance {
 			}
 			host.setCpuUsagePercent(host.getCpuUsagePercent()/host.getCpuUsageList().size());
 		}
-		
 		//时间戳
 		host.performTimeStamp = null;
 		host.performTimeStamp = new Date();
@@ -110,9 +110,10 @@ public class Metric2Performance {
 			if (PerformAnalyseUtil.handleUUID(e.getKey()).equals(vm.getUuid())
 					&& PerformAnalyseUtil.handlePart(e.getKey()).equals(ConstCharacter.INTERNALMEMORY)) {
 				double[] freeMemorys = PerformAnalyseUtil.toDoubleArray(e.getValue());
-//				System.out.println("空闲内存大小是 = " + freeMemorys[freeMemorys.length-1]);
-				vm.setMemoryUsagePercent((100 - freeMemorys[freeMemorys.length-1]));
-				vm.setMemoryUsageValue(vm.getMemoryUsagePercent()*vm.getMemoryTotalValue()/100.0);
+				vm.setMemoryUsageValue(vm.getMemoryTotalValue() - freeMemorys[freeMemorys.length-1]/1024);
+				vm.setMemoryUsagePercent(vm.getMemoryUsageValue()/vm.getMemoryTotalValue()*100.0);
+//				vm.setMemoryUsagePercent((100 - freeMemorys[freeMemorys.length-1]/1024));
+//				vm.setMemoryUsageValue(vm.getMemoryUsagePercent()*vm.getMemoryTotalValue()/100.0);
 			}
 
 			// get the line data of vif send

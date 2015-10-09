@@ -15,7 +15,6 @@ public class PerformAnalyseUtil {
 			try{
 				if(stringArray.get(i) != null){
 					result[i] = Double.parseDouble(stringArray.get(i));
-					result[i] /= 1024.0; 
 				} else {
 					result[i] = 0.0;
 				}
