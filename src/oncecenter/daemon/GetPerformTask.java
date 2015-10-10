@@ -5,8 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
+
 import oncecenter.Constants;
+import oncecenter.util.ImageRegistry;
 import oncecenter.util.Ssh;
+import oncecenter.util.dialog.ErrorMessageDialog;
 import oncecenter.util.performance.analyse.Metric2Performance;
 import oncecenter.util.performance.analyse.ReadFromDB;
 import oncecenter.util.performance.analyse.XML2Metrics;
@@ -15,8 +23,10 @@ import oncecenter.views.xenconnectiontreeview.elements.VMTreeObjectRoot;
 import oncecenter.views.xenconnectiontreeview.elements.VMTreeObjectVM;
 import oncecenter.views.xenconnectiontreeview.elements.VMTreeObject.ItemState;
 
+import com.once.xenapi.Connection;
 import com.once.xenapi.Types;
 import com.once.xenapi.VM;
+import com.once.xenapi.Types.SessionAuthenticationFailed;
 
 public class GetPerformTask extends TimerTask {
 	
@@ -25,6 +35,7 @@ public class GetPerformTask extends TimerTask {
 //	private VMTreeObjectHost rootHost;
 //	private Connection conn;
 //	private boolean isPool;
+	private ReadFromDB dataFromDB = null;
 	
 	public GetPerformTask(VMTreeObjectRoot root){
 		this.root=root;
@@ -43,17 +54,11 @@ public class GetPerformTask extends TimerTask {
 			return;
 		}
 		for(VMTreeObjectHost host : root.hostMap.values()){
-			try{
-				Ssh ssh = new Ssh(host.getIpAddress(),host.getUsername(),host.getPassword());
-				ssh.Connect();
-				ssh.GetFile(Constants.performpath, host.getPerformFilePath());
-				ssh.CloseSsh();
-			}catch(Exception e){
-				e.printStackTrace();
-				break;
+			if(dataFromDB == null){
+				dataFromDB = getDBInfo(host);
 			}
 //			XML2Metrics.getMetricsTimelines(host);
-			ReadFromDB.getMetricsTimelines(host);
+			dataFromDB.getMetricsTimelines(host);
 //			System.out.println(host.getName() + "的性能数据个数为 = " + host.getMetrics().size());
 //			for(Map.Entry<String, List<String>> entry : host.getMetrics().entrySet()){
 //				System.out.println(host.getName() + "的性能数据为 = " + entry.getKey() + "-->" + entry.getValue());
@@ -80,7 +85,7 @@ public class GetPerformTask extends TimerTask {
 //				vm.columns = host.columns;
 //				vm.step = host.step;
 				//vm.analyVMPerformance();
-				ReadFromDB.getMetricsTimelines(vm);
+				dataFromDB.getMetricsTimelines(vm);
 				Metric2Performance.analyVMPerformance(vm);
 				if(vm.columns != 0) {
 //					System.out.println("vm.endTime = " + vm.endTime + ", vm.startTime = " + vm.startTime + ", vm.columns=  " + vm.columns);
@@ -93,6 +98,29 @@ public class GetPerformTask extends TimerTask {
 				}
 			}
 		}
+	}
+	public ReadFromDB getDBInfo(VMTreeObjectHost host){
+		Ssh ssh = new Ssh(host.getIpAddress(),host.getUsername(),host.getPassword());
+		ssh.Connect();
+//		ssh.GetFile(Constants.performpath, host.getPerformFilePath());
+		String commandPrefix = "cat /etc/xen/setting.conf | grep -w ";
+		String commandSuffix = " | awk -F '=' '{print $2}'";
+		String dbURL = null;
+		String dbUserName = null;
+		String dbPasswd = null;
+		String dbName = null;
+		String dbPort = null;
+		try {
+			dbURL = ssh.Command(commandPrefix + "db_server" + commandSuffix).trim() + ":";
+			dbUserName = ssh.Command(commandPrefix + "user" + commandSuffix);
+			dbPasswd = ssh.Command(commandPrefix + "pwd" + commandSuffix);
+			dbName = ssh.Command(commandPrefix + "db_name" + commandSuffix);
+			dbPort = ssh.Command(commandPrefix + "db_port" + commandSuffix);
+			ssh.CloseSsh();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return new ReadFromDB(dbURL, Integer.parseInt(dbPort.trim()), dbUserName.trim(), dbPasswd.trim(), dbName.trim());
 	}
 	
 //	public void ssss(){

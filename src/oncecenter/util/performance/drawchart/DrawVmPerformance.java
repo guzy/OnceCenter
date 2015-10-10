@@ -75,12 +75,13 @@ public class DrawVmPerformance {
 //            		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
 //        		}
 //        		stepnumber = originArr.length;
-//        		System.out.println("vm 的CPU数据 = " +stepnumber +" : "+ Arrays.toString(originArr));
+//        		System.out.println("vm 的CPU数据 = "+ Arrays.toString(originArr));
         		TimeSeries timeSeriesCPU = new TimeSeries(handlePart(e.getKey()),Second.class);
         		for(int i=stepnumber-1; i>=0;i--){
         			Date date = new Date((endTime-i*step*1000));
         	        String t = df.format(date);
-        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]+ new Random().nextFloat()*10 + adjustCPU));
+        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]));
+        	        //+ new Random().nextFloat()*10 + adjustCPU
     	        	timeSeriesCPU.addOrUpdate(new Second(getSecond(t),getMinute(t),
         					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
         		}
@@ -102,7 +103,7 @@ public class DrawVmPerformance {
         	        String t = df.format(date);
         	        double input = Double.parseDouble(dcmFmt.format(totalMemory-originArr[stepnumber-i-1]/1024));
         	        timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
-        					getHour(t),getDay(t),getMonth(t),getYear(t)), input*5 + adjustMem);
+        					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
         		}
         	}
         	

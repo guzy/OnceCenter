@@ -95,7 +95,8 @@ public class DrawHostPerformance {
 	        		for(int i=stepnumber-1; i>=0;i--){	               
 	        			Date date = new Date((endTime-i*step*1000));
 	        	        String t = df.format(date);
-	        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]+ new Random().nextFloat()*10+adjustCPU));
+	        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]));
+	        	        //+ new Random().nextFloat()*10+adjustCPU
         	        	timeSeriesCPU.addOrUpdate(new Second(getSecond(t),getMinute(t),
 	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
 	        		}
@@ -115,7 +116,7 @@ public class DrawHostPerformance {
 	        	        String t = df.format(date);
 	        	        double input = Double.parseDouble(dcmFmt.format(totalMemory-originArr[stepnumber-i-1]/1024));
 	        	        timeSeriesMemory.addOrUpdate(new Second(getSecond(t),getMinute(t),
-	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input*10 + adjustMem);
+	        					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
 	        		}
 	        	}
 	        	
@@ -124,7 +125,7 @@ public class DrawHostPerformance {
 	        			&& contains(handlePart(e.getKey()),"pif_")&& contains(handlePart(e.getKey()),"tx")){
 	        		double[] originArr = toDoubleArray(e.getValue());
 //	        		stepnumber = originArr.length;
-//	        		System.out.println("Host 的PIF数据 = " + Arrays.toString(originArr));
+//	        		System.out.println("Host 的PIF send数据 = " + Arrays.toString(originArr));
 //	        		double[] inputArr = new double[stepnumber]; 
 //	        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
 	        		TimeSeries timeSeriesNIC = new TimeSeries(handleNIC(e.getKey())+"Send",Second.class);
@@ -146,6 +147,7 @@ public class DrawHostPerformance {
 //	        		stepnumber = originArr.length;
 //	        		double[] inputArr = new double[stepnumber]; 
 //	        		System.arraycopy(originArr, originArr.length-stepnumber, inputArr, 0, stepnumber);
+//	        		System.out.println("Host 的PIF recv数据 = " + Arrays.toString(originArr));
 	        		TimeSeries timeSeriesNIC = new TimeSeries(handleNIC(e.getKey())+"Recieve",Second.class);
 	        		for(int i=stepnumber-1; i>=0;i--){	               
 	        			Date date = new Date((endTime-i*step*1000));
@@ -156,8 +158,7 @@ public class DrawHostPerformance {
 	        	        
 	        		}
 	        		lineDatasetNic.addSeries(timeSeriesNIC);       		
-	        	}
-	        	       	
+	        	}	        	       	
 	        }
 		}
         cpuChart=drawCPU.draw(lineDatasetCPU);

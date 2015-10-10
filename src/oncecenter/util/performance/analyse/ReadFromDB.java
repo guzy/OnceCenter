@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Shell;
+
+import oncecenter.util.ImageRegistry;
+import oncecenter.util.dialog.ErrorMessageDialog;
 import oncecenter.views.xenconnectiontreeview.elements.VMTreeObject;
 import oncecenter.views.xenconnectiontreeview.elements.VMTreeObjectHost;
 import oncecenter.views.xenconnectiontreeview.elements.VMTreeObjectVM;
@@ -19,13 +25,21 @@ public class ReadFromDB {
 	/*
 	 * This class is a replacement of XML2Metric which is under the same package. 
 	 */
-	private static final String dbURL = "133.133.135.9:3306";
-	private static final String dbUserName = "root";
-	private static final String dbPasswd = "onceas";
-	private static final String dbName = "bsperformance";
-	private static final String dbName4GetAllTable = "information_schema";
+	private String dbURL;
+	private int dbPort;
+	private String dbUserName;
+	private String dbPasswd;
+	private String dbName;
+	private String dbName4GetAllTable = "information_schema";
 	
-	public static void getMetricsTimelines(VMTreeObjectHost host) {
+	public ReadFromDB(String dbURL, int dbPort, String dbUserName, String dbPasswd, String dbName){
+		this.dbURL = dbURL;
+		this.dbPort = dbPort;
+		this.dbUserName = dbUserName;
+		this.dbPasswd = dbPasswd;
+		this.dbName = dbName;
+	}
+	public void getMetricsTimelines(VMTreeObjectHost host) {
 		host.clearMetrics();
 		List<String> allTableName = getAllTableName(dbName);
 		host.columns = Integer.MAX_VALUE;
@@ -38,7 +52,7 @@ public class ReadFromDB {
 			host.columns = Math.min(host.columns, currColumn);//选取cpu,mem,pif,pbd记录数的最小值可以避免数组越界
 		}
 	}
-	public static void getMetricsTimelines(VMTreeObjectVM vm) {
+	public void getMetricsTimelines(VMTreeObjectVM vm) {
 		vm.newMetics();
 		List<String> allTableName = getAllTableName(dbName);
 		vm.columns = Integer.MAX_VALUE;
@@ -49,7 +63,7 @@ public class ReadFromDB {
 			vm.columns = Math.min(vm.columns, currColumn);
 		}
 	}
-	public static int getMetricsTimelines(VMTreeObjectHost host, String tableName){
+	public int getMetricsTimelines(VMTreeObjectHost host, String tableName){
 		int result = 0;
 		String dataType = tableName.substring(0, tableName.indexOf("_"));
 		String sql = "select * from " + tableName + " where id='" + host.getUuid() + "';";
@@ -116,7 +130,7 @@ public class ReadFromDB {
 		}
 		return result;
 	}
-	public static int getMetricsTimelines(VMTreeObjectVM vm, String tableName){
+	public int getMetricsTimelines(VMTreeObjectVM vm, String tableName){
 		int result = 0;
 		String dataType = tableName.substring(0, tableName.indexOf("_"));
 		String sql = "select * from " + tableName + " where id='" + vm.getUuid() + "';";
@@ -184,7 +198,7 @@ public class ReadFromDB {
 		}
 		return result;
 	}
-	private static void putData2Host(VMTreeObjectHost host, String key, String data, ResultSet rs){
+	private void putData2Host(VMTreeObjectHost host, String key, String data, ResultSet rs){
 		data = handleData(data, key);
 		if (host.getMetrics().containsKey(key)) {
 			host.getMetrics().get(key).add(data);
@@ -201,7 +215,7 @@ public class ReadFromDB {
 			host.getMetrics().put(key, lt);
 		}
 	}
-	private static void putData2VM(VMTreeObjectVM vm, String key, String data, ResultSet rs){
+	private void putData2VM(VMTreeObjectVM vm, String key, String data, ResultSet rs){
 		data = handleData(data, key);
 		if (vm.returnMetric().containsKey(key)) {
 			vm.returnMetric().get(key).add(data);
@@ -218,22 +232,20 @@ public class ReadFromDB {
 			vm.returnMetric().put(key, lt);
 		}
 	}
-	public static String handleData(String data, String key){
+	public String handleData(String data, String key){
 		double newData = Double.parseDouble(data);
-		if(key.contains("cpu")){
-//			newData = newData;
-		} else if(key.contains("free")) {
-			if(key.contains("host"))
-				newData += new Random().nextInt(100000)+1000000;
-			else
-				newData += new Random().nextInt(1000)+10000;
-		} else if(key.contains("vif") || key.contains("pif")){
-			newData = newData + new Random().nextFloat();
-		} else if(key.contains("vbd"))
-			newData = newData + new Random().nextFloat();
+//		if(key.contains("free")) {
+//			if(key.contains("host"))
+//				newData += new Random().nextInt(100000)+1000000;
+//			else
+//				newData += new Random().nextInt(1000)+10000;
+//		} else if(key.contains("vif") || key.contains("pif")){
+//			newData = newData + new Random().nextFloat();
+//		} else if(key.contains("vbd"))
+//			newData = newData + new Random().nextFloat();
 		return String.valueOf(newData);
 	}
-	private static List<String> getAllTableName(String dbName){
+	private List<String> getAllTableName(String dbName){
 		List<String> result = new ArrayList<String>();
 		Connection conn = getConn(dbName4GetAllTable);
 		String sql = "select table_name from information_schema.tables where table_schema='" 
@@ -259,7 +271,7 @@ public class ReadFromDB {
 		}
 		return result;
 	}
-	private static int getCPUCount(VMTreeObjectHost host){
+	private int getCPUCount(VMTreeObjectHost host){
 		int result = 0;
 		Connection conn = getConn(dbName);
 		String sql = "select distinct cpu_id from cpu_30min where id='" + host.getUuid() + "'";
@@ -282,7 +294,7 @@ public class ReadFromDB {
 		}
 		return result;
 	}
-	public static int getTableLength(String tableName, String id){
+	public int getTableLength(String tableName, String id){
 		String sql = "select count(*) from " + tableName + " where cpu_id=" + id;
 		Connection conn = getConn(dbName);
 		PreparedStatement queryPstmt = null;
@@ -303,18 +315,25 @@ public class ReadFromDB {
 		}
         return -1;
 	}
-	private static Connection getConn(String dbName){
+	private Connection getConn(String dbName){
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://" + dbURL + "/" + dbName;
+			String url = "jdbc:mysql://" + dbURL + dbPort + "/" + dbName;
 			conn = DriverManager.getConnection(url, dbUserName,
 					dbPasswd);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
+		} catch (Exception e) {
+			conn = null;
 			e.printStackTrace();
 		}
 		return conn;
 	}
+	@Override
+	public String toString() {
+		return "ReadFromDB [dbURL=" + dbURL + ", dbPort=" + dbPort
+				+ ", dbUserName=" + dbUserName + ", dbPasswd=" + dbPasswd
+				+ ", dbName=" + dbName + ", dbName4GetAllTable="
+				+ dbName4GetAllTable + "]";
+	}
+	
 }
