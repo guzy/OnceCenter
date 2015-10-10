@@ -80,7 +80,7 @@ public class DrawVmPerformance {
         		for(int i=stepnumber-1; i>=0;i--){
         			Date date = new Date((endTime-i*step*1000));
         	        String t = df.format(date);
-        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]));
+        	        double input = Double.parseDouble(dcmFmt.format(originArr[stepnumber-i-1]*100));
         	        //+ new Random().nextFloat()*10 + adjustCPU
     	        	timeSeriesCPU.addOrUpdate(new Second(getSecond(t),getMinute(t),
         					getHour(t),getDay(t),getMonth(t),getYear(t)), input);
