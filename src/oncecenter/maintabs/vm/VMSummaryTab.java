@@ -935,8 +935,8 @@ public class VMSummaryTab extends OnceVMTabItem {
 	public void getPerform(){
 		cpuUsagePercent=objectVM.getCpuUsagePercent();
 		memoryUsagePercent=objectVM.getMemoryUsagePercent();
-		memoryTotalValue=MathUtil.Rounding(objectVM.getMemoryTotalValue(), 3)+"MB";
-		memoryUsageValue=MathUtil.Rounding(objectVM.getMemoryUsageValue(), 3)+"MB";
+		memoryTotalValue=MathUtil.Rounding(objectVM.getMemoryTotalValue(), 2)+"MB";
+		memoryUsageValue=MathUtil.Rounding(objectVM.getMemoryUsageValue(), 2)+"MB";
 		HashMap<String,Double> Wnets = objectVM.getwNetList();
 		HashMap<String,Double> Rnets = objectVM.getrNetList();
 		netNames.clear();

@@ -614,8 +614,8 @@ public class SummaryTab extends OnceHostTabItem {
 						double memoryTotal = objectHost.getMemoryTotalValue();
 						//double memoryFree = record.metrics.getMemoryFree(object.getConnection());
 						double memoryUsage = objectHost.getMemoryUsageValue();
-						memoryTotalValue=MathUtil.Rounding(memoryTotal/1024.0/1024.0, 3)+"MB";
-						memoryUsageValue=MathUtil.Rounding(memoryUsage/1024.0/1024.0, 3)+"MB";
+						memoryTotalValue=MathUtil.Rounding(memoryTotal/1024.0/1024.0, 2)+"MB";
+						memoryUsageValue=MathUtil.Rounding(memoryUsage/1024.0/1024.0, 2)+"MB";
 						memoryUsagePercent=memoryUsage/memoryTotal*100.0;
 						
 					}
